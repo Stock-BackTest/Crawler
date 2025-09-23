@@ -1,0 +1,117 @@
+# labeler full schema (영문+한글 혼용)
+
+enable:
+  issues: true
+  prs: true
+
+comments:
+  issues: |
+    이 이슈를 열어주셔서 감사합니다!
+    제목과 본문에서 감지된 키워드에 따라 라벨이 자동으로 적용되었습니다.
+
+    필요하다면 라벨을 검토하고 수정해주세요.
+  prs: |
+    기여해주셔서 감사합니다!
+    제목과 본문에서 감지된 키워드에 따라 라벨이 자동으로 적용되었습니다.
+
+    필요하다면 라벨을 검토하고 수정해주세요.
+
+labels:
+  # 🚨 품질/안정성
+  'bug | 버그':
+    include:
+      - '\bbug[s]?\b'
+      - '버그'
+      - '오류'
+    exclude: []
+    branches:
+      - 'master'
+      - 'main'
+
+  'security | 보안':
+    include:
+      - '\b(security|vuln|xss|csrf|injection)\b'
+      - '보안'
+      - '취약점'
+    exclude: []
+
+  # 🚀 기능 개발
+  'feature | 기능 추가':
+    include:
+      - '\bfeature\b'
+      - '\badd(ed|ing)?\b'
+      - '기능 추가'
+      - '새로운 기능'
+    exclude: []
+
+  'enhancement | 개선':
+    include:
+      - '\bfeat\b'
+      - '\benhancement\b'
+      - '개선'
+      - '향상'
+    exclude: []
+
+  'refactor | 리팩터링':
+    include:
+      - '\brefactor(ing|ed)?\b'
+      - '리팩터링'
+      - '코드 개선'
+    exclude: []
+
+  # 🛠️ 유지보수/환경
+  'documentation | 문서':
+    include:
+      - '\b(doc|docs|documentation|readme)\b'
+      - '문서'
+      - '가이드'
+    exclude: []
+
+  'dependencies | 의존성':
+    include:
+      - '\b(bump|upgrade|update dependency|deps)\b'
+      - '의존성'
+      - '라이브러리 업데이트'
+    exclude: []
+
+  'ci/cd | 배포':
+    include:
+      - '\b(ci|cd|pipeline|workflow|deploy)\b'
+      - '배포'
+      - '파이프라인'
+    exclude: []
+
+  'test | 테스트':
+    include:
+      - '\btest(s|ing)?\b'
+      - '\bunit\b'
+      - '\bintegration\b'
+      - '테스트'
+      - '단위 테스트'
+      - '통합 테스트'
+    exclude: []
+
+  # 📦 범용 워크플로우
+  'help wanted | 도움 필요':
+    include:
+      - '\bhelp( me)?\b'
+      - '도움 필요'
+      - '도와주세요'
+    exclude:
+      - '\b\[test(ing)?\]\b'
+
+  'discussion | 논의':
+    include:
+      - '\bdiscuss(ion)?\b'
+      - '\bproposal\b'
+      - '논의'
+      - '제안'
+    exclude: []
+
+  'good first issue | 쉬운 이슈':
+    include:
+      - '\bgood first issue\b'
+      - '\bbeginner friendly\b'
+      - '쉬운 이슈'
+      - '처음 기여'
+    exclude: []
