@@ -6,32 +6,33 @@ from typing import Dict, Optional
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from domain.provider_interface import BaseProviderRequest
+from infra.provider.seibro import constants as C
 
 
 @dataclass
 class SeibroRequest(BaseProviderRequest):
-  action: str = "exerInfoDtramtPayStatPlist"
-  task: str = "ksd.safe.bip.cnts.etf.process.EtfExerInfoPTask"
-  w2xpath: str = "/IPORTAL/user/etf/BIP_CNTS06030V.xml"
+  # 기본 동작/경로
+  action: str = C.DEFAULT_ACTION
+  task: str = C.DEFAULT_TASK
+  w2xpath: str = C.DEFAULT_W2XPATH
 
-  menu_no: str = "179"
-  cmm_btn_abbr_nm: str = (
-    "total_search,openall,print,hwp,word,pdf,searchIcon,searchIcon,"
-    "seach,searchIcon,seach,"
-  )
+  # 공통 파라미터
+  menu_no: str = C.DEFAULT_MENU_NO
+  cmm_btn_abbr_nm: str = C.DEFAULT_CMM_BTN_ABBR_NM
 
-  start_page: str = "1"
-  end_page: str = "1"
+  # 페이지/기간
+  start_page: str = C.DEFAULT_START_PAGE
+  end_page: str = C.DEFAULT_END_PAGE
   from_dt: Optional[dt.date] = None
   to_dt: Optional[dt.date] = None
 
-  # --- 검색/정렬 옵션(대부분 기본값/빈값) ---
-  etf_sort_level_cd: str = "0"
-  etf_big_sort_cd: str = ""
-  etf_sort_cd: str = ""
-  isin: str = ""
-  mngco_custno: str = ""
-  rgt_rsn_dtail_sort_cd: str = ""
+  # 검색/정렬 옵션
+  etf_sort_level_cd: str = C.DEFAULT_ETF_SORT_LEVEL_CD
+  etf_big_sort_cd: str = C.DEFAULT_ETF_BIG_SORT_CD
+  etf_sort_cd: str = C.DEFAULT_ETF_SORT_CD
+  isin: str = C.DEFAULT_ISIN
+  mngco_custno: str = C.DEFAULT_MNGCO_CUSTNO
+  rgt_rsn_dtail_sort_cd: str = C.DEFAULT_RGT_RSN_DTAIL_SORT_CD
 
   extra_params: Dict[str, str] = field(default_factory=dict)
 
@@ -39,7 +40,7 @@ class SeibroRequest(BaseProviderRequest):
     if self.to_dt is None:
       self.to_dt = dt.date.today()
     if self.from_dt is None:
-      self.from_dt = self.to_dt - dt.timedelta(days=365) - dt.timedelta(days=1)
+      self.from_dt = self.to_dt - dt.timedelta(days=366)
 
     if self.from_dt > self.to_dt:
       self.from_dt, self.to_dt = self.to_dt, self.from_dt
@@ -52,18 +53,18 @@ class SeibroRequest(BaseProviderRequest):
   # ---------- 변환 유틸 ----------
   def as_params(self) -> Dict[str, str]:
     base = {
-      "MENU_NO": self.menu_no,
-      "CMM_BTN_ABBR_NM": self.cmm_btn_abbr_nm,
-      "etf_sort_level_cd": self.etf_sort_level_cd,
-      "etf_big_sort_cd": self.etf_big_sort_cd,
-      "START_PAGE": str(self.start_page),
-      "END_PAGE": str(self.end_page),
-      "etf_sort_cd": self.etf_sort_cd,
-      "isin": self.isin,
-      "mngco_custno": self.mngco_custno,
-      "RGT_RSN_DTAIL_SORT_CD": self.rgt_rsn_dtail_sort_cd,
-      "fromRGT_STD_DT": self.from_dt.strftime("%Y%m%d"),
-      "toRGT_STD_DT": self.to_dt.strftime("%Y%m%d"),
+      C.K_MENU_NO: self.menu_no,
+      C.K_CMM_BTN_ABBR_NM: self.cmm_btn_abbr_nm,
+      C.K_ETF_SORT_LEVEL_CD: self.etf_sort_level_cd,
+      C.K_ETF_BIG_SORT_CD: self.etf_big_sort_cd,
+      C.K_START_PAGE: str(self.start_page),
+      C.K_END_PAGE: str(self.end_page),
+      C.K_ETF_SORT_CD: self.etf_sort_cd,
+      C.K_ISIN: self.isin,
+      C.K_MNGCO_CUSTNO: self.mngco_custno,
+      C.K_RGT_RSN_DTAIL_SORT_CD: self.rgt_rsn_dtail_sort_cd,
+      C.K_FROM_DT: self.from_dt.strftime(C.DATE_FMT),
+      C.K_TO_DT: self.to_dt.strftime(C.DATE_FMT),
     }
     base.update(self.extra_params or {})
     return base
@@ -73,15 +74,15 @@ class SeibroRequest(BaseProviderRequest):
 
     root = Element("reqParam", action=self.action, task=self.task)
 
-    if "MENU_NO" in params:
-      SubElement(root, "MENU_NO", value=params["MENU_NO"])
-    if "CMM_BTN_ABBR_NM" in params:
-      SubElement(root, "CMM_BTN_ABBR_NM", value=params["CMM_BTN_ABBR_NM"])
+    if C.K_MENU_NO in params:
+      SubElement(root, C.K_MENU_NO, value=params[C.K_MENU_NO])
+    if C.K_CMM_BTN_ABBR_NM in params:
+      SubElement(root, C.K_CMM_BTN_ABBR_NM, value=params[C.K_CMM_BTN_ABBR_NM])
 
-    SubElement(root, "W2XPATH", value=self.w2xpath)
+    SubElement(root, C.K_W2XPATH, value=self.w2xpath)
 
     for k, v in params.items():
-      if k in ("MENU_NO", "CMM_BTN_ABBR_NM"):
+      if k in (C.K_MENU_NO, C.K_CMM_BTN_ABBR_NM):
         continue
       SubElement(root, k, value=("" if v is None else str(v)))
 
