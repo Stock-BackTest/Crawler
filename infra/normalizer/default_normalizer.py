@@ -54,9 +54,10 @@ class DefaultNormalizer(Normalizer):
       isin = _pick(r, mapping.get("isin", [])) or ""
       pay_base_date = _parse_date(_pick(r, mapping.get("pay_base_date", [])))
       actual_pay_date = _parse_date(
-        _pick(r, mapping.get("actual_pay_date", [])))
+          _pick(r, mapping.get("actual_pay_date", [])))
       div_type = _pick(r, mapping.get("div_type", [])) or ""
       dist_per_share = _parse_float(_pick(r, mapping.get("dist_per_share", [])))
+      tax_std = _parse_float(_pick(r, mapping.get("tax_std", [])))
       estm_stdprc = _parse_float(_pick(r, mapping.get("estm_stdprc", [])))
 
       ev = DividendEntity(
@@ -65,7 +66,8 @@ class DefaultNormalizer(Normalizer):
           actual_pay_date=actual_pay_date,
           div_type=div_type,
           dist_per_share=dist_per_share,
-          estm_stdprc=estm_stdprc,
+          tax_std=tax_std,
+          estm_stdprc=estm_stdprc
       )
       out.append(ev)
 
