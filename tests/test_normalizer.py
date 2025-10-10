@@ -4,7 +4,7 @@ from datetime import date
 from domain.dividend_entity import DividendEntity
 from infra.normalizer.default_normalizer import DefaultNormalizer
 
-from tests.fixtures.normalizer_fixtures import (
+from tests.common.fixtures.normalizer_fixtures import (
   SAMPLE_RECORDS, MAPPING,
   SAMPLE_ALT, MAPPING_ALT,
   SAMPLE_FALLBACK, MAPPING_FALLBACK,
