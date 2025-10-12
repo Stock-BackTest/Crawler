@@ -15,8 +15,9 @@ TReq = TypeVar("TReq", bound=BaseProviderRequest)
 
 class DividendProvider(ABC, Generic[TReq]):
   @abstractmethod
-  def fetch(self, req: BaseProviderRequest) -> str:
   def fetch(self, req: BaseProviderRequest) -> requests.Response:
     raise NotImplemented
 
+  @abstractmethod
+  def supports(self, req: BaseProviderRequest) -> bool:
     raise NotImplemented

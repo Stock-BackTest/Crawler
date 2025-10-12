@@ -4,7 +4,7 @@ from typing import ClassVar, Type
 
 import requests
 
-from domain.provider_interface import DividendProvider
+from domain.provider_interface import DividendProvider, BaseProviderRequest
 from infra.provider.seibro import constants as C
 from infra.provider.seibro.requests.seibro_request import SeibroRequest
 
@@ -48,3 +48,6 @@ class SeibroDividendProvider(DividendProvider):
         last_err = e
         time.sleep((1.2 ** attempt) + random.random())
     raise RuntimeError(f"POST failed: {last_err}")
+
+  def supports(self, req: BaseProviderRequest) -> bool:
+    return isinstance(req, self.request_type)
