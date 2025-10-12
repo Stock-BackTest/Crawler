@@ -7,7 +7,7 @@ class Normalizer(Protocol):
       self,
       records: Iterable[dict],
       mapping: Dict[str, List[str]],
-  ) -> List[dict]:
+  ) -> List[DividendEntity]:
     """
     records: Extractor가 반환한 원문 dict 리스트
     mapping: 표준필드 → 원문 키 후보 리스트
