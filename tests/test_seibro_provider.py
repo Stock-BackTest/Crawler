@@ -6,18 +6,21 @@ import requests
 
 from infra.provider.seibro.requests.seibro_request import SeibroRequest
 from infra.provider.seibro.seibro_provider import SeibroDividendProvider
+from tests.common.fixtures.request_fixtures import make_seibro_req, OtherRequest
 
 SAMPLE_VECTOR = """<?xml version="1.0" encoding="UTF-8" ?>
-<vector beforeServletCall="1" beforeEJBCall="1" afterServletCall="1" afterEJBCall="1" result="2">
+<vector beforeServletCall="1" beforeEJBCall="1" afterServletCall="1" result="2">
   <data vectorkey="0" type="Document"><result><ISIN value="KR123"/></result></data>
   <data vectorkey="1" type="Document"><result><ISIN value="KR456"/></result></data>
 </vector>
 """
 
-def _response_of(body: str, status: int = 200, headers: dict | None = None, url: str = "https://example.com"):
+
+def _response_of(body: str, status: int = 200, headers: dict | None = None,
+                 url: str = "https://example.com"):
     r = requests.Response()
     r.status_code = status
-    r._content = body.encode("utf-8")   # Response는 내부적으로 _content(bytes)를 사용
+    r._content = body.encode("utf-8")
     r.encoding = "utf-8"
     r.url = url
     if headers:
@@ -39,15 +42,11 @@ class TestSeibroProvider(unittest.TestCase):
           url="https://seibro.or.kr/websquare/executor/control.jsp",
       )
 
-      req = SeibroRequest(
-          from_dt=dt.date(2025, 9, 15),
-          to_dt=dt.date(2025, 9, 21),
-      ).with_page_range(1, 30)
+      req = make_seibro_req(page=(1, 30))
 
       result = provider.fetch(req)
 
       self.assertIsInstance(result, requests.Response)
-
       self.assertIn("<vector", result.text)
       self.assertIn('result="2"', result.text)
 
@@ -61,6 +60,8 @@ class TestSeibroProvider(unittest.TestCase):
       self.assertIn("control.jsp", provider.s.headers.get("Referer", ""))
 
   def test_to_xml_minimal_contract(self):
+    # 필요하면 이것도 make_seibro_req()로 바꿀 수 있지만,
+    # 요청 관련만 분리 원칙에 따라 기존 그대로 둠
     req = SeibroRequest()
     xml = req.to_xml()
     self.assertIn("<reqParam", xml)
@@ -79,6 +80,13 @@ class TestSeibroProvider(unittest.TestCase):
     d2 = SeibroRequest(from_dt=a, to_dt=b)
     self.assertEqual(d2.from_dt, b)
     self.assertEqual(d2.to_dt, a)
+
+  def test_supports_request_type(self):
+    provider = SeibroDividendProvider(timeout=5, max_retries=1)
+
+    self.assertTrue(provider.supports(SeibroRequest()))  # True
+    self.assertFalse(provider.supports(OtherRequest()))  # False
+    self.assertFalse(provider.supports(object()))        # False
 
 
 if __name__ == "__main__":
