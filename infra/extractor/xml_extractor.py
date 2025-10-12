@@ -1,10 +1,10 @@
 import xml.etree.ElementTree as ET
 from typing import List, Iterable, Dict
 
-from domain.extractor_interface import Extractor, RawResponse
+from domain.extractor_interface import DividendExtractor, RawResponse
 
 
-class XmlExtractor(Extractor):
+class XmlDividendExtractor(DividendExtractor):
   def __init__(self, row_tags: List[str] | None = None):
     self.row_tags = row_tags or ["result"]
 
