@@ -3,12 +3,14 @@ import time
 
 import requests
 
-from domain.provider_interface import ProviderInterface
+from domain.provider_interface import DividendProvider
 from infra.provider.seibro import constants as C
 from infra.provider.seibro.requests.seibro_request import SeibroRequest
 
 
-class SeibroProvider(ProviderInterface):
+class SeibroDividendProvider(DividendProvider):
+  request_type: ClassVar[Type[SeibroRequest]] = SeibroRequest
+
   def __init__(self, timeout: int = 20, max_retries: int = 3):
     self.s = requests.Session()
     self.s.headers.update(C.DEFAULT_HEADERS)

@@ -9,6 +9,8 @@ class BaseProviderRequest(ABC):
 
 
 class ProviderInterface(ABC):
+TReq = TypeVar("TReq", bound=BaseProviderRequest)
+class DividendProvider(ABC, Generic[TReq]):
   @abstractmethod
   def fetch(self, req: BaseProviderRequest) -> str:
     raise NotImplemented

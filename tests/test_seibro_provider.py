@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 from infra.provider.seibro.requests.seibro_request import SeibroRequest
-from infra.provider.seibro.seibro_provider import SeibroProvider
+from infra.provider.seibro.seibro_provider import SeibroDividendProvider
 
 SAMPLE_VECTOR = """<?xml version="1.0" encoding="UTF-8" ?>
 <vector beforeServletCall="1" beforeEJBCall="1" afterServletCall="1" afterEJBCall="1" result="2">
@@ -16,7 +16,7 @@ SAMPLE_VECTOR = """<?xml version="1.0" encoding="UTF-8" ?>
 
 class TestSeibroProvider(unittest.TestCase):
   def test_fetch_mock(self):
-    provider = SeibroProvider(timeout=5, max_retries=1)
+    provider = SeibroDividendProvider(timeout=5, max_retries=1)
 
     with patch(
         "infra.provider.seibro.seibro_provider.requests.Session.get") as mock_get, \
