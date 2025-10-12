@@ -1,7 +1,8 @@
 # tests/test_seibro_provider.py
 import datetime as dt
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+import requests
 
 from infra.provider.seibro.requests.seibro_request import SeibroRequest
 from infra.provider.seibro.seibro_provider import SeibroDividendProvider
@@ -13,17 +14,30 @@ SAMPLE_VECTOR = """<?xml version="1.0" encoding="UTF-8" ?>
 </vector>
 """
 
+def _response_of(body: str, status: int = 200, headers: dict | None = None, url: str = "https://example.com"):
+    r = requests.Response()
+    r.status_code = status
+    r._content = body.encode("utf-8")   # Response는 내부적으로 _content(bytes)를 사용
+    r.encoding = "utf-8"
+    r.url = url
+    if headers:
+        r.headers.update(headers)
+    return r
+
 
 class TestSeibroProvider(unittest.TestCase):
   def test_fetch_mock(self):
     provider = SeibroDividendProvider(timeout=5, max_retries=1)
 
-    with patch(
-        "infra.provider.seibro.seibro_provider.requests.Session.get") as mock_get, \
-        patch(
-            "infra.provider.seibro.seibro_provider.requests.Session.post") as mock_post:
-      mock_get.return_value = MagicMock(status_code=200, text="OK")
-      mock_post.return_value = MagicMock(status_code=200, text=SAMPLE_VECTOR)
+    with patch("infra.provider.seibro.seibro_provider.requests.Session.get") as mock_get, \
+         patch("infra.provider.seibro.seibro_provider.requests.Session.post") as mock_post:
+
+      mock_get.return_value = _response_of("OK")
+      mock_post.return_value = _response_of(
+          SAMPLE_VECTOR,
+          headers={"Content-Type": "application/xml; charset=UTF-8"},
+          url="https://seibro.or.kr/websquare/executor/control.jsp",
+      )
 
       req = SeibroRequest(
           from_dt=dt.date(2025, 9, 15),
@@ -32,12 +46,12 @@ class TestSeibroProvider(unittest.TestCase):
 
       result = provider.fetch(req)
 
-      self.assertIsInstance(result, str)
-      self.assertIn("<vector", result)
-      self.assertIn('result="2"', result)
+      self.assertIsInstance(result, requests.Response)
+
+      self.assertIn("<vector", result.text)
+      self.assertIn('result="2"', result.text)
 
       self.assertTrue(mock_get.called)
-
       mock_post.assert_called_once()
 
       self.assertEqual(
