@@ -1,5 +1,6 @@
 import random
 import time
+from typing import ClassVar, Type
 
 import requests
 
@@ -27,7 +28,7 @@ class SeibroDividendProvider(DividendProvider):
     self.s.get(ref, timeout=self.timeout)
     self.s.headers["Referer"] = ref
 
-  def fetch(self, req: SeibroRequest):
+  def fetch(self, req: SeibroRequest) -> requests.Response:
     self._prime(req.w2xpath, req.menu_no)
 
     self.s.headers["submissionid"] = f"{C.SUBMISSION_PREFIX}{req.action}"
@@ -42,7 +43,7 @@ class SeibroDividendProvider(DividendProvider):
         if "<WARNING" in text:
           raise RuntimeError(f"Server WARNING: {text[:240]}")
         r.raise_for_status()
-        return text
+        return r
       except Exception as e:
         last_err = e
         time.sleep((1.2 ** attempt) + random.random())
