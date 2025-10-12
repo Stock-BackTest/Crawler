@@ -1,4 +1,3 @@
-# tests/test_seibro_provider.py
 import datetime as dt
 import unittest
 from unittest.mock import patch
@@ -60,8 +59,6 @@ class TestSeibroProvider(unittest.TestCase):
       self.assertIn("control.jsp", provider.s.headers.get("Referer", ""))
 
   def test_to_xml_minimal_contract(self):
-    # 필요하면 이것도 make_seibro_req()로 바꿀 수 있지만,
-    # 요청 관련만 분리 원칙에 따라 기존 그대로 둠
     req = SeibroRequest()
     xml = req.to_xml()
     self.assertIn("<reqParam", xml)
@@ -84,9 +81,9 @@ class TestSeibroProvider(unittest.TestCase):
   def test_supports_request_type(self):
     provider = SeibroDividendProvider(timeout=5, max_retries=1)
 
-    self.assertTrue(provider.supports(SeibroRequest()))  # True
-    self.assertFalse(provider.supports(OtherRequest()))  # False
-    self.assertFalse(provider.supports(object()))        # False
+    self.assertTrue(provider.supports(SeibroRequest()))
+    self.assertFalse(provider.supports(OtherRequest()))
+    self.assertFalse(provider.supports(object()))
 
 
 if __name__ == "__main__":
