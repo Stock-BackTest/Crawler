@@ -1,8 +1,11 @@
-# domain/normalizer_interface.py
-from typing import Protocol, Iterable, Dict, List
+from abc import ABC, abstractmethod
+from typing import Iterable, Dict, List
+
+from domain.dividend_entity import DividendEntity
 
 
-class Normalizer(Protocol):
+class DividendNormalizer(ABC):
+  @abstractmethod
   def normalize(
       self,
       records: Iterable[dict],
@@ -21,4 +24,4 @@ class Normalizer(Protocol):
     context: 추가 주입값(예: {"ticker": "KR7...."}) — 레코드에서 못 찾으면 사용
     반환: 표준 스키마 dict 리스트
     """
-    ...
+    raise NotImplemented

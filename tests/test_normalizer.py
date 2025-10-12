@@ -2,7 +2,7 @@ import unittest
 from datetime import date
 
 from domain.dividend_entity import DividendEntity
-from infra.normalizer.default_normalizer import DefaultNormalizer
+from infra.normalizer.default_normalizer import DefaultDividendNormalizer
 
 from tests.common.fixtures.normalizer_fixtures import (
   SAMPLE_RECORDS, MAPPING,
@@ -17,7 +17,7 @@ from tests.common.fixtures.normalizer_fixtures import (
 
 class TestDefaultNormalizerEntity(unittest.TestCase):
   def test_normalize_returns_entities(self):
-    normalizer = DefaultNormalizer()
+    normalizer = DefaultDividendNormalizer()
     result = normalizer.normalize(
       copy_records(SAMPLE_RECORDS),
       mapping=copy_mapping(MAPPING),
@@ -46,7 +46,7 @@ class TestDefaultNormalizerEntity(unittest.TestCase):
     self.assertAlmostEqual(ev2.estm_stdprc, 9944.968864, places=6)
 
   def test_normalize_alt_columns_simple(self):
-    normalizer = DefaultNormalizer()
+    normalizer = DefaultDividendNormalizer()
     result = normalizer.normalize(
       copy_records(SAMPLE_ALT),
       mapping=copy_mapping(MAPPING_ALT),
@@ -64,7 +64,7 @@ class TestDefaultNormalizerEntity(unittest.TestCase):
     self.assertAlmostEqual(ev.estm_stdprc, 123.45, places=6)
 
   def test_normalize_alt_columns_with_fallback_keys(self):
-    normalizer = DefaultNormalizer()
+    normalizer = DefaultDividendNormalizer()
     result = normalizer.normalize(
       copy_records(SAMPLE_FALLBACK),
       mapping=copy_mapping(MAPPING_FALLBACK),
@@ -89,7 +89,7 @@ class TestDefaultNormalizerEntity(unittest.TestCase):
     self.assertAlmostEqual(b.estm_stdprc, 10.0, places=6)
 
   def test_normalize_alt_columns_with_commas_and_spaces(self):
-    normalizer = DefaultNormalizer()
+    normalizer = DefaultDividendNormalizer()
     result = normalizer.normalize(
       copy_records(SAMPLE_COMMAS),
       mapping=copy_mapping(MAPPING_COMMAS),
@@ -105,7 +105,7 @@ class TestDefaultNormalizerEntity(unittest.TestCase):
     self.assertAlmostEqual(ev.estm_stdprc, 9999.99, places=6)
 
   def test_normalize_alt_columns_with_missing_optional_fields(self):
-    normalizer = DefaultNormalizer()
+    normalizer = DefaultDividendNormalizer()
     result = normalizer.normalize(
       copy_records(SAMPLE_MISSING),
       mapping=copy_mapping(MAPPING_MISSING),
@@ -121,7 +121,7 @@ class TestDefaultNormalizerEntity(unittest.TestCase):
     self.assertAlmostEqual(ev.estm_stdprc, 100.0, places=6)
 
   def test_normalize_empty_input(self):
-    normalizer = DefaultNormalizer()
+    normalizer = DefaultDividendNormalizer()
     result = normalizer.normalize([], mapping=copy_mapping(EMPTY_INPUT_MAPPING))
     self.assertEqual(result, [])
 
