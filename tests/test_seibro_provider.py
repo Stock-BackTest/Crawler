@@ -16,7 +16,7 @@ SAMPLE_VECTOR = """<?xml version="1.0" encoding="UTF-8" ?>
 
 
 def _response_of(body: str, status: int = 200, headers: dict | None = None,
-                 url: str = "https://example.com"):
+                 url: str = "https://example.com") -> requests.Response:
     r = requests.Response()
     r.status_code = status
     r._content = body.encode("utf-8")
