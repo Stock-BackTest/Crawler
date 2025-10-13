@@ -64,3 +64,15 @@ DEFAULT_ETF_SORT_CD = ""
 DEFAULT_ISIN = ""
 DEFAULT_MNGCO_CUSTNO = ""
 DEFAULT_RGT_RSN_DTAIL_SORT_CD = ""
+
+PROVIDER_SEIBRO = "seibro"
+
+SEIBRO_FIELD_MAPPING = {
+    "isin": ["ISIN"],
+    "pay_base_date": ["RGT_STD_DT"],
+    "actual_pay_date": ["TH1_PAY_TERM_BEGIN_DT"],
+    "div_type": ["RGT_RSN_DTAIL_NM"],
+    "dist_per_share": ["BUNBE"],
+    "tax_std": ["TAX_STD"],
+    "estm_stdprc": ["ESTM_STDPRC"],
+}
