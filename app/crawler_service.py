@@ -72,4 +72,8 @@ class CrawlerService:
         raise ValueError(f"Invalid provider: {provider}")
 
       records = self.normalizer.normalize(records=rows, mapping=mapping)
+
+      if len(records) < request.size:
+        break
+
       self.repository.save(records=records)
