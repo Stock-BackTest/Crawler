@@ -13,11 +13,15 @@ from interfaces.request.crawler_request import CrawlerRequest
 
 def make_parser() -> argparse.ArgumentParser:
   p = argparse.ArgumentParser(description="Dividend Crawler CLI")
-  p.add_argument("--provider", required=True)
-  p.add_argument("--from-dt")
-  p.add_argument("--to-dt")
-  p.add_argument("--max-page", type=int)
-  p.add_argument("--size", type=int)
+  p.add_argument("--provider", default=os.getenv("CRAWLER_PROVIDER"))
+  p.add_argument("--from-dt", default=os.getenv("CRAWLER_FROM"))
+  p.add_argument("--to-dt", default=os.getenv("CRAWLER_TO"))
+  p.add_argument("--max-page", type=int,
+                 default=int(os.getenv("CRAWLER_MAX_PAGE", "30")))
+  p.add_argument("--size", type=int,
+                 default=int(os.getenv("CRAWLER_SIZE", "30")))
+  p.add_argument("--log-level", default=os.getenv("LOG_LEVEL", "INFO"),
+                 choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
   return p
 
 
@@ -25,7 +29,7 @@ def make_service() -> CrawlerService:
   url = os.getenv("DATABASE_URL")
   if not url:
     raise ValueError(
-        "DATABASE_URL not set; skipping PG integration tests.")
+        "DATABASE_URL not set.")
 
   providers = [SeibroDividendProvider()]
   extractors = [XmlDividendExtractor()]
