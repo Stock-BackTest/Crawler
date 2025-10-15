@@ -18,9 +18,11 @@ def _to_req(
     from_dt: dt.date,
     to_dt: dt.date) -> BaseProviderRequest | None:
   if provider.lower() == PROVIDER_SEIBRO:
+    start = (page - 1) * size + 1
+    end = page * size
     return (SeibroRequest()
             .with_date_range(start=from_dt, end=to_dt)
-            .with_page_range(start=(page - 1) * size + 1, end=page * size))
+            .with_page_range(start=start, end=end))
   return None
 
 
