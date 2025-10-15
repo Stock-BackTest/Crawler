@@ -1,14 +1,17 @@
 import random
 import time
+from typing import ClassVar, Type
 
 import requests
 
-from domain.provider_interface import ProviderInterface
+from domain.provider_interface import DividendProvider, BaseProviderRequest
 from infra.provider.seibro import constants as C
 from infra.provider.seibro.requests.seibro_request import SeibroRequest
 
 
-class SeibroProvider(ProviderInterface):
+class SeibroDividendProvider(DividendProvider):
+  request_type: ClassVar[Type[SeibroRequest]] = SeibroRequest
+
   def __init__(self, timeout: int = 20, max_retries: int = 3):
     self.s = requests.Session()
     self.s.headers.update(C.DEFAULT_HEADERS)
@@ -25,7 +28,7 @@ class SeibroProvider(ProviderInterface):
     self.s.get(ref, timeout=self.timeout)
     self.s.headers["Referer"] = ref
 
-  def fetch(self, req: SeibroRequest):
+  def fetch(self, req: SeibroRequest) -> requests.Response:
     self._prime(req.w2xpath, req.menu_no)
 
     self.s.headers["submissionid"] = f"{C.SUBMISSION_PREFIX}{req.action}"
@@ -40,8 +43,11 @@ class SeibroProvider(ProviderInterface):
         if "<WARNING" in text:
           raise RuntimeError(f"Server WARNING: {text[:240]}")
         r.raise_for_status()
-        return text
+        return r
       except Exception as e:
         last_err = e
         time.sleep((1.2 ** attempt) + random.random())
     raise RuntimeError(f"POST failed: {last_err}")
+
+  def supports(self, req: BaseProviderRequest) -> bool:
+    return isinstance(req, self.request_type)
