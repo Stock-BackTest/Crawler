@@ -1,7 +1,7 @@
 import unittest
 
 from domain.extractor_interface import RawResponse
-from infra.extractor.xml_extractor import XmlExtractor
+from infra.extractor.xml_extractor import XmlDividendExtractor
 
 SAMPLE_DATA="""
 <vector beforeServletCall="1758972022689" beforeEJBCall="1758972022696" afterServletCall="1758972023121" afterEJBCall="1758972023119" result="30">
@@ -19,7 +19,7 @@ SAMPLE_DATA="""
 
 class TestExtractor(unittest.TestCase):
   def test_extract(self):
-    xml = XmlExtractor()
+    xml = XmlDividendExtractor()
     resp = RawResponse(text=SAMPLE_DATA)
     result = list(xml.parse(resp))
 

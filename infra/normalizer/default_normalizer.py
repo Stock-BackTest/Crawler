@@ -2,7 +2,7 @@ from datetime import datetime, date
 from typing import Iterable, Dict, List, Optional
 
 from domain.dividend_entity import DividendEntity
-from domain.normalizer_interface import Normalizer
+from domain.normalizer_interface import DividendNormalizer
 
 
 def _parse_date(s: Optional[str]) -> Optional[date]:
@@ -39,7 +39,7 @@ def _pick(d: dict, candidates: List[str]) -> Optional[str]:
   return None
 
 
-class DefaultNormalizer(Normalizer):
+class DefaultDividendNormalizer(DividendNormalizer):
   def __init__(self):
     pass
 
