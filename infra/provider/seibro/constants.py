@@ -73,6 +73,6 @@ SEIBRO_FIELD_MAPPING = {
     "actual_pay_date": ["TH1_PAY_TERM_BEGIN_DT"],
     "div_type": ["RGT_RSN_DTAIL_NM"],
     "dist_per_share": ["BUNBE"],
-    "tax_std": ["TAX_STD"],
+    "tax_std": ["TAXSTD"],
     "estm_stdprc": ["ESTM_STDPRC"],
 }
