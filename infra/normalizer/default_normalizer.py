@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, date
 from typing import Iterable, Dict, List, Optional
 
@@ -69,6 +70,7 @@ class DefaultDividendNormalizer(DividendNormalizer):
           tax_std=tax_std,
           estm_stdprc=estm_stdprc
       )
+      logging.debug(f"[NORMALIZE] entity: {ev}")
       out.append(ev)
 
     return out

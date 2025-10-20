@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from contextlib import contextmanager
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence
 
@@ -133,6 +134,7 @@ class PostgresDividendRepository(DividendRepository):
 
         result = sess.execute(stmt)
         total_affected += len(result.fetchall())
+      logging.debug(f"[POSTGRES] query_done | rows=%d", total_affected)
 
     return total_affected
 
