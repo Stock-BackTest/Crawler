@@ -27,6 +27,9 @@ class CrawlerRequest:
 
   @classmethod
   def from_cli(cls, ns) -> "CrawlerRequest":
+    provider = getattr(ns, "provider", None)
+    provider = (provider or "seibro").strip().lower()
+
     from_dt = _parse_date(getattr(ns, "from_dt", None))
     to_dt = _parse_date(getattr(ns, "to_dt", None))
     max_page = getattr(ns, "max_page", None) or 1
@@ -38,7 +41,7 @@ class CrawlerRequest:
       raise ValueError("--size must be positive")
 
     return cls(
-        provider=ns.provider,
+        provider=provider,
         from_dt=from_dt,
         to_dt=to_dt,
         max_page=max_page,

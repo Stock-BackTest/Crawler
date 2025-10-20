@@ -50,6 +50,11 @@ def main():
 
   ns = parser.parse_args()
   req = CrawlerRequest.from_cli(ns)
+  try:
+    req = CrawlerRequest.from_cli(ns)
+  except ValueError as e:
+    logging.error(f"error: {e}")
+    sys.exit(2)
 
   svc = make_service()
 
