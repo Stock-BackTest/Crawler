@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import os
+import sys
 
 from app.crawler_service import CrawlerService
 from infra.extractor.xml_extractor import XmlDividendExtractor
@@ -11,7 +13,18 @@ from infra.repository.postgres_repository import PostgresDividendRepository
 from interfaces.request.crawler_request import CrawlerRequest
 
 
+def configure_logging(level_str: str):
+  level = getattr(logging, level_str.upper(), logging.INFO)
+  logging.info("Logger configured: level=%s", level)
+  logging.basicConfig(
+      level=level,
+      format="%(asctime)s [%(levelname)s] %(message)s",
+      force=True,
+  )
+
+
 def make_parser() -> argparse.ArgumentParser:
+  logging.info("Make argument parser")
   p = argparse.ArgumentParser(description="Dividend Crawler CLI")
   p.add_argument("--provider", default=os.getenv("CRAWLER_PROVIDER"))
   p.add_argument("--from-dt", default=os.getenv("CRAWLER_FROM"))
@@ -26,6 +39,7 @@ def make_parser() -> argparse.ArgumentParser:
 
 
 def make_service() -> CrawlerService:
+  logging.info("Create CrawlerService")
   url = os.getenv("DATABASE_URL")
   if not url:
     raise ValueError(
@@ -49,7 +63,7 @@ def main():
   parser = make_parser()
 
   ns = parser.parse_args()
-  req = CrawlerRequest.from_cli(ns)
+  configure_logging(ns.log_level)
   try:
     req = CrawlerRequest.from_cli(ns)
   except ValueError as e:
@@ -57,6 +71,17 @@ def main():
     sys.exit(2)
 
   svc = make_service()
+
+  info_parts = [
+    f"target={req.provider}",
+    f"from={req.from_dt}",
+    f"to={req.to_dt}",
+    f"max_page={req.max_page}",
+    f"size={req.size}",
+  ]
+  if req.extra:
+    info_parts.append(f"extra={req.extra}")
+  logging.info("[CRAWLER] Start crawling | " + " | ".join(info_parts))
 
   svc.execute(request=req)
 

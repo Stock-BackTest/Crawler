@@ -1,3 +1,4 @@
+import logging
 import xml.etree.ElementTree as ET
 from typing import List, Iterable, Dict
 
@@ -23,6 +24,7 @@ class XmlDividendExtractor(DividendExtractor):
     rows: List[Dict[str, str]] = []
 
     for tag in self.row_tags:
+      logging.debug(f"[EXTRACT] target: {tag}")
       for node in root.findall(f".//{tag}"):
         record: Dict[str, str] = {}
         for child in list(node):
@@ -30,7 +32,8 @@ class XmlDividendExtractor(DividendExtractor):
           if not key:
             continue
           val = child.attrib.get("value", (
-                child.text or "").strip() if child.text else "")
+              child.text or "").strip() if child.text else "")
+          logging.debug(f"[EXTRACT] node - key: {key}, value: {val}")
           record[key] = val
         if any(record.values()):
           rows.append(record)

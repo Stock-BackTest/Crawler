@@ -1,4 +1,5 @@
 import datetime as dt
+import logging
 from typing import List, Dict
 
 from domain.extractor_interface import DividendExtractor, RawResponse
@@ -46,6 +47,7 @@ class CrawlerService:
 
   def execute(self, request: CrawlerRequest):
     for page in range(1, request.max_page + 1):
+      logging.info("Generate provider request")
       req = _to_req(
           provider=request.provider,
           from_dt=request.from_dt,
@@ -59,21 +61,29 @@ class CrawlerService:
       provider = next((p for p in self.providers if p.supports(req)), None)
       if provider is None:
         raise ValueError(f"No provider can handle: {type(req).__name__}")
+      logging.info("[CRAWLER] Fetch start")
       resp = provider.fetch(req=req)
 
       raw = RawResponse.convert(resp=resp)
       extractor = next((e for e in self.extractors if e.can_handle(raw)), None)
       if extractor is None:
         raise ValueError(f"No extractor can handle: {type(req).__name__}")
+      logging.info("[CRAWLER] Extract start")
       rows = extractor.parse(raw=raw)
 
       mapping = _get_mapping(request.provider)
       if mapping is None:
         raise ValueError(f"Invalid provider: {provider}")
 
+      logging.info("[CRAWLER] Normalize start")
       records = self.normalizer.normalize(records=rows, mapping=mapping)
 
-      if len(records) < request.size:
-        break
+      logging.info("[CRAWLER] Save start")
+      affected = self.repository.save(records=records)
 
-      self.repository.save(records=records)
+      if affected is None or affected < request.size:
+        logging.info(
+            "[CRAWLER] Last page detected | provider=%s | page=%d | data size=%d",
+            request.provider, page, affected
+        )
+        break
